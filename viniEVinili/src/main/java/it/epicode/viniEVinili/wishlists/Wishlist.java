@@ -1,10 +1,14 @@
 package it.epicode.viniEVinili.wishlists;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import it.epicode.viniEVinili.products.Product;
 import it.epicode.viniEVinili.users.User;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.Set;
@@ -19,11 +23,23 @@ public class Wishlist {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    //@OneToOne
+    //@MapsId
+    //@JoinColumn(name = "user_id")
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private User user;
 
     @ManyToMany
+    @JoinTable(
+            name = "wishlists_products",
+            joinColumns = @JoinColumn(name = "wishlist_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonManagedReference
     private List<Product> products;
 }

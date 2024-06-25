@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 public class WishlistRequestDTO {
 
-    //non mi serve l'id dello user perché lo prendo da jwt
+//    private Long userId; //non mi serve l'id dello user perché lo prendo da jwt
     private List<Long> productIds;
 }

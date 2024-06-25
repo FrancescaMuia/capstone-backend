@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.security.core.Authentication;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,11 +38,21 @@ public class WishlistService {
         return mapWishlistToResponseDTO(wishlist);
     }
 
-    public WishlistResponseDTO save(WishlistRequestDTO requestDTO) {
-        Wishlist wishlist = mapRequestDTOToWishlist(requestDTO);
-        Wishlist savedWishlist = wishlistRepository.save(wishlist);
-        return mapWishlistToResponseDTO(savedWishlist);
-    }
+//    public WishlistResponseDTO save(WishlistRequestDTO requestDTO) {
+//        Wishlist wishlist = mapRequestDTOToWishlist(requestDTO);
+//        Wishlist savedWishlist = wishlistRepository.save(wishlist);
+//        return mapWishlistToResponseDTO(savedWishlist);
+//    }
+public WishlistResponseDTO save(WishlistRequestDTO requestDTO) {
+    Long userId = getCurrentUserId(); // Ottieni l'ID utente
+    User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+    Wishlist wishlist = mapRequestDTOToWishlist(requestDTO, user);
+    wishlist.setUser(user); // Imposta l'utente nella wishlist
+    Wishlist savedWishlist = wishlistRepository.save(wishlist);
+    return mapWishlistToResponseDTO(savedWishlist);
+}
+
 
 
 
@@ -82,19 +95,30 @@ public class WishlistService {
         return responseDTO;
     }
 
-    private Wishlist mapRequestDTOToWishlist(WishlistRequestDTO requestDTO) {
-        Wishlist wishlist = new Wishlist();
-        //wishlist.setUser(requestDTO.getUser());
-
-        List<Product> products = requestDTO.getProductIds().stream()
-                .map(id -> productRepository.findById(id)
-                        .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id)))
-                .collect(Collectors.toList());
-
-        wishlist.setProducts(products);
-
-        return wishlist;
+//    private Wishlist mapRequestDTOToWishlist(WishlistRequestDTO requestDTO) {
+//        Wishlist wishlist = new Wishlist();
+//        //wishlist.setUser(requestDTO.getUser());
+//
+//        List<Product> products = requestDTO.getProductIds().stream()
+//                .map(id -> productRepository.findById(id)
+//                        .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id)))
+//                .collect(Collectors.toList());
+//
+//        wishlist.setProducts(products);
+//
+//        return wishlist;
+//    }
+private Wishlist mapRequestDTOToWishlist(WishlistRequestDTO requestDTO, User user) {
+    Wishlist wishlist = new Wishlist();
+    List<Product> products = productRepository.findAllById(requestDTO.getProductIds());
+    if (products.size() != requestDTO.getProductIds().size()) {
+        throw new RuntimeException("Uno o più prodotti non sono stati trovati");
     }
+    wishlist.setUser(user);
+    wishlist.setProducts(products);
+    return wishlist;
+}
+
 
 
 
@@ -109,5 +133,7 @@ public class WishlistService {
         }
         throw new IllegalStateException("Utente non autenticato");
     }
+
+
 
 }
