@@ -12,6 +12,8 @@ public class AddressResponseDTO {
     private String streetNumber;
     private String zipCode;
 
-    private boolean isShipping;
+    /*private boolean isShipping;
     private boolean isBilling;
+
+     */
 }

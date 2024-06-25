@@ -2,10 +2,17 @@ package it.epicode.viniEVinili.users;
 
 import it.epicode.viniEVinili.addresses.AddressResponseDTO;
 import it.epicode.viniEVinili.orders.OrderResponseDTO;
+import it.epicode.viniEVinili.security.Roles;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(setterPrefix = "with")
 @Data
 public class UserResponseDTO {
     private Long id;
@@ -13,11 +20,13 @@ public class UserResponseDTO {
     private String email;
     private String name;
     private String surname;
-    //private AddressResponseDTO shippingAddress;
-    //private AddressResponseDTO billingAddress;
-    private List<AddressResponseDTO> addresses;
+    private String city;
+    private String toponym;
+    private String addressName;
+    private String streetNumber;
+    private String zipCode;
     private String phoneNumber;
-    private String role;
+    private List<Roles> roles;
     private List<OrderResponseDTO> orders;
 
 }

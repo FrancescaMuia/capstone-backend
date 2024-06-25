@@ -3,10 +3,14 @@ package it.epicode.viniEVinili.users;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.epicode.viniEVinili.addresses.Address;
 import it.epicode.viniEVinili.orders.Order;
+import it.epicode.viniEVinili.products.Product;
+import it.epicode.viniEVinili.security.Roles;
+import it.epicode.viniEVinili.wishlists.Wishlist;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +25,6 @@ public class User {
     private Long id;
 
     private String username;
-    private String password;
     private String email;
     private String name;
     private String surname;
@@ -39,13 +42,27 @@ public class User {
      */
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    /*@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Address> addresses;
+
+     */
+    private String city;
+    private String toponym;
+    private String addressName;
+    private String streetNumber;
+    private String zipCode;
 
     private String phoneNumber;
 
-    private String role; //MODIFICALO DOPO AVER IMPLEMENTATO LA SECURITY
+    @Column(length = 125, nullable = false)
+    private String password;
+    private String avatar;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private final List<Roles> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Wishlist wishlist;
 }

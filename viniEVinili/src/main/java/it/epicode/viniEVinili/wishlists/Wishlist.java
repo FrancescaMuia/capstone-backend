@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -18,10 +19,11 @@ public class Wishlist {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
+    @MapsId
     @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToMany
-    private Set<Product> products;
+    private List<Product> products;
 }

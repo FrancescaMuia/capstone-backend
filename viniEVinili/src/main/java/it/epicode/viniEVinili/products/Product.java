@@ -1,5 +1,6 @@
 package it.epicode.viniEVinili.products;
 
+import it.epicode.viniEVinili.users.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,4 +18,6 @@ public class Product {
     private double price;
     private boolean available;
     private int year;
+
+
 }

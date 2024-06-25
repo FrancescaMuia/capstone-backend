@@ -15,6 +15,8 @@ public class AddressRequestDTO {
 
     private String zipCode;
 
-    private boolean isShipping;
+    /*private boolean isShipping;
     private boolean isBilling;
+
+     */
 }

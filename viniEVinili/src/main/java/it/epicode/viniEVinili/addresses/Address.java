@@ -22,10 +22,13 @@ public class Address {
     private String streetNumber;
     private String zipCode;
 
-    @Column(nullable = true)
+    /*@Column(nullable = true)
     private boolean isShipping;
     @Column(nullable = true)
     private boolean isBilling;
+
+     */
+
 
     @ManyToOne
     @JoinColumn(name = "user_id")
