@@ -26,6 +26,7 @@ public class UserResponseDTO {
     private String streetNumber;
     private String zipCode;
     private String phoneNumber;
+    private String avatar;
     private List<Roles> roles;
     private List<OrderResponseDTO> orders;
 

@@ -1,10 +1,13 @@
 package it.epicode.viniEVinili.users;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import it.epicode.viniEVinili.addresses.Address;
 import it.epicode.viniEVinili.addresses.AddressRepository;
 import it.epicode.viniEVinili.addresses.AddressRequestDTO;
 import it.epicode.viniEVinili.addresses.AddressResponseDTO;
 import it.epicode.viniEVinili.email.EmailService;
+import it.epicode.viniEVinili.exceptions.NotFoundException;
 import it.epicode.viniEVinili.security.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,8 +24,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -45,6 +51,9 @@ public class UserService {
     private AddressRepository addressRepository;
 
      */
+
+    @Value("${CLOUDINARY_URL}")
+    private String cloudinaryUrl;
 
     public List<UserResponsePrj> findAllUsers(){
         return userRepository.findAllBy();
@@ -309,5 +318,14 @@ private JwtUtils jwtUtils;
         return userDto;
 
 
+    }
+
+
+    public User saveAvatar(long id, MultipartFile file) throws IOException {
+        var user = userRepository.findById(id).orElseThrow(()-> new NotFoundException(id));
+        Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
+        var url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+        user.setAvatar(url);
+        return userRepository.save(user);
     }
 }
