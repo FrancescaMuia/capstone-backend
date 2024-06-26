@@ -1,6 +1,7 @@
 package it.epicode.viniEVinili.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import it.epicode.viniEVinili.addresses.Address;
 import it.epicode.viniEVinili.orders.Order;
 import it.epicode.viniEVinili.products.Product;
@@ -64,5 +65,6 @@ public class User {
     private List<Order> orders;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Wishlist wishlist;
 }

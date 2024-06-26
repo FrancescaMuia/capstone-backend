@@ -1,5 +1,6 @@
 package it.epicode.viniEVinili.wishlists;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import it.epicode.viniEVinili.products.Product;
@@ -30,6 +31,7 @@ public class Wishlist {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonBackReference
     private User user;
 
     @ManyToMany
