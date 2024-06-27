@@ -79,10 +79,17 @@ public class UserController {
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> modifyUser (@PathVariable Long id, @RequestBody UserRequestDTO userRequestDTO){
+//    @PutMapping("/{id}")
+//    public ResponseEntity<UserResponseDTO> modifyUser (@PathVariable Long id, @RequestBody UserRequestDTO userRequestDTO){
+//
+//        UserResponseDTO userResponseDTO = user.update(id,userRequestDTO);
+//        return ResponseEntity.ok(userResponseDTO);
+//    }
 
-        UserResponseDTO userResponseDTO = user.update(id,userRequestDTO);
+    @PutMapping
+    public ResponseEntity<UserResponseDTO> modifyUser (@RequestBody UserRequestDTO userRequestDTO){
+
+        UserResponseDTO userResponseDTO = user.update(userRequestDTO);
         return ResponseEntity.ok(userResponseDTO);
     }
 

@@ -15,6 +15,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,15 +24,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -134,7 +136,8 @@ public class UserService {
         return response;
     }
 
-    /*public User update(User user) {
+    /* VECCHIO UPDATE
+    public User update(User user) {
         // Controlla se l'utente esiste
         if (!userRepository.existsById(user.getId())) {
             throw new EntityNotFoundException("Cannot update user. User with id " + user.getId() + " not found.");
@@ -142,21 +145,56 @@ public class UserService {
         return userRepository.save(user);
     }
      */
-    public UserResponseDTO update(Long id, UserRequestDTO request){
-        // Questo metodo modifica un entity esistente.
-        // Prima verifica se l'entity esiste nel database. Se non esiste, viene generata un'eccezione.
-        if(!userRepository.existsById(id)){
-            throw new EntityNotFoundException("User non trovato");
-        }
-        // Se l'entity esiste, le sue proprietà vengono modificate con quelle presenti nell'oggetto PersonaRequest.
-        User entity = userRepository.findById(id).get();
-        BeanUtils.copyProperties(request, entity);
-        // L'entity modificato viene quindi salvato nel database e le sue proprietà vengono copiate in un oggetto PersonaResponse.
+
+
+//    public UserResponseDTO update(Long id, UserRequestDTO request){
+//        // Questo metodo modifica un entity esistente.
+//        // Prima verifica se l'entity esiste nel database. Se non esiste, viene generata un'eccezione.
+//        if(!userRepository.existsById(id)){
+//            throw new EntityNotFoundException("User non trovato");
+//        }
+//        // Se l'entity esiste, le sue proprietà vengono modificate con quelle presenti nell'oggetto PersonaRequest.
+//        User entity = userRepository.findById(id).get();
+//        BeanUtils.copyProperties(request, entity);
+//        // L'entity modificato viene quindi salvato nel database e le sue proprietà vengono copiate in un oggetto PersonaResponse.
+//        userRepository.save(entity);
+//        UserResponseDTO response = new UserResponseDTO();
+//        BeanUtils.copyProperties(entity, response);
+//        return response;
+//    }
+
+
+    public UserResponseDTO update(UserRequestDTO request) {
+        Long currentUserId = getCurrentUserId(); // Metodo per ottenere l'id corrente dell'utente da JWT
+
+        // Verifica se l'utente esiste nel database
+        User entity = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + currentUserId));
+
+        // Copia tutti i campi non nulli o non vuoti dal DTO all'entità
+        BeanUtils.copyProperties(request, entity, getNullPropertyNames(request));
+
+        // Salva l'entità aggiornata nel repository
         userRepository.save(entity);
+
+        // Crea una UserResponseDTO con le informazioni aggiornate
         UserResponseDTO response = new UserResponseDTO();
         BeanUtils.copyProperties(entity, response);
+
         return response;
     }
+    private String[] getNullPropertyNames(UserRequestDTO request) {
+        // Ottiene i nomi delle proprietà nulle dall'oggetto UserRequestDTO
+        final BeanWrapper src = new BeanWrapperImpl(request);
+        Set<String> emptyNames = new HashSet<>();
+        for (PropertyDescriptor pd : src.getPropertyDescriptors()) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) emptyNames.add(pd.getName());
+        }
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
 
     /*public void delete(Long userId) {
         userRepository.deleteById(userId);
@@ -327,5 +365,15 @@ private JwtUtils jwtUtils;
         var url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
         user.setAvatar(url);
         return userRepository.save(user);
+    }
+
+    // Metodo per ottenere l'ID dell'utente dal contesto di sicurezza
+    public Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof SecurityUserDetails) {
+            SecurityUserDetails userDetails = (SecurityUserDetails) authentication.getPrincipal();
+            return userDetails.getUserId();
+        }
+        throw new IllegalStateException("Utente non autenticato");
     }
 }

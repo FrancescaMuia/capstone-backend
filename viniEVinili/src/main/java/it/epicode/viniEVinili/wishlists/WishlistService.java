@@ -7,6 +7,7 @@ import it.epicode.viniEVinili.tracks.Track;
 import it.epicode.viniEVinili.tracks.TrackResponseDTO;
 import it.epicode.viniEVinili.users.User;
 import it.epicode.viniEVinili.users.UserRepository;
+import it.epicode.viniEVinili.users.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +33,9 @@ public class WishlistService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private UserService userService;
+
     public WishlistResponseDTO findById(Long wishlistId) {
         Wishlist wishlist = wishlistRepository.findById(wishlistId)
                 .orElseThrow(() -> new EntityNotFoundException("Wishlist not found with id: " + wishlistId));
@@ -44,7 +48,7 @@ public class WishlistService {
 //        return mapWishlistToResponseDTO(savedWishlist);
 //    }
 public WishlistResponseDTO save(WishlistRequestDTO requestDTO) {
-    Long userId = getCurrentUserId(); // Ottieni l'ID utente
+    Long userId = userService.getCurrentUserId(); // Ottieni l'ID utente
     User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
     Wishlist wishlist = mapRequestDTOToWishlist(requestDTO, user);
@@ -124,15 +128,15 @@ private Wishlist mapRequestDTOToWishlist(WishlistRequestDTO requestDTO, User use
 
 
 
-    // Metodo per ottenere l'ID dell'utente dal contesto di sicurezza
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof SecurityUserDetails) {
-            SecurityUserDetails userDetails = (SecurityUserDetails) authentication.getPrincipal();
-            return userDetails.getUserId();
-        }
-        throw new IllegalStateException("Utente non autenticato");
-    }
+//    // Metodo per ottenere l'ID dell'utente dal contesto di sicurezza
+//    private Long getCurrentUserId() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null && authentication.getPrincipal() instanceof SecurityUserDetails) {
+//            SecurityUserDetails userDetails = (SecurityUserDetails) authentication.getPrincipal();
+//            return userDetails.getUserId();
+//        }
+//        throw new IllegalStateException("Utente non autenticato");
+//    }
 
 
 

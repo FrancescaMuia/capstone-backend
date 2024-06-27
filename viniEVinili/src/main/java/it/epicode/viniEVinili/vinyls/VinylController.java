@@ -2,6 +2,7 @@ package it.epicode.viniEVinili.vinyls;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class VinylController {
         return ResponseEntity.ok(service.findAll());
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<VinylResponseDTO> create(@RequestBody VinylRequestDTO request){
         return ResponseEntity.ok(service.save(request));
@@ -32,6 +34,12 @@ public class VinylController {
     public ResponseEntity<VinylResponseDTO> modify(@PathVariable Long id, @RequestBody VinylRequestDTO request){
         return ResponseEntity.ok(service.update(id, request));
     }
+
+//    @PutMapping("/associate")
+//    public ResponseEntity<Void> associateVinylAndWine(@RequestParam Long vinylId, @RequestParam Long wineId) {
+//        service.associateVinylAndWine(vinylId, wineId);
+//        return ResponseEntity.ok().build();
+//    }
 
 
     @DeleteMapping("/{id}")

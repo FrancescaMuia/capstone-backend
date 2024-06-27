@@ -2,11 +2,14 @@ package it.epicode.viniEVinili.carts;
 
 import it.epicode.viniEVinili.cartItems.CartItem;
 import it.epicode.viniEVinili.cartItems.CartItemResponseDTO;
+import it.epicode.viniEVinili.security.SecurityUserDetails;
 import it.epicode.viniEVinili.users.User;
 import it.epicode.viniEVinili.users.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -103,5 +106,15 @@ public class CartService {
                 .sum();
         log.info("calc totale: " + tempt);
         return tempt;
+    }
+
+    // Metodo per ottenere l'ID dell'utente dal contesto di sicurezza
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof SecurityUserDetails) {
+            SecurityUserDetails userDetails = (SecurityUserDetails) authentication.getPrincipal();
+            return userDetails.getUserId();
+        }
+        throw new IllegalStateException("Utente non autenticato");
     }
 }

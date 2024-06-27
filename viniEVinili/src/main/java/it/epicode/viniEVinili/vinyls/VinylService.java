@@ -119,4 +119,21 @@ public class VinylService {
         return vinyl;
     }
 
+//    public void associateVinylAndWine(Long vinylId, Long wineId) {
+//        Vinyl vinyl = vinylRepository.findById(vinylId)
+//                .orElseThrow(() -> new EntityNotFoundException("Vinyl not found with id: " + vinylId));
+//        Wine wine = wineRepository.findById(wineId)
+//                .orElseThrow(() -> new EntityNotFoundException("Wine not found with id: " + wineId));
+//
+//        // Aggiungi il vino alla lista dei vini suggeriti del vinile
+//        vinyl.getRecommendedWines().add(wine);
+//
+//        // Aggiungi il vinile alla lista dei vinili suggeriti del vino
+//        wine.getRecommendedVinyls().add(vinyl);
+//
+//        // Salva le entità aggiornate
+//        vinylRepository.save(vinyl);
+//        wineRepository.save(wine);
+//    }
+
 }

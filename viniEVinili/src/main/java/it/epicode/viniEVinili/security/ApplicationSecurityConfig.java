@@ -66,10 +66,13 @@ public class ApplicationSecurityConfig {
                                         .requestMatchers(HttpMethod.POST, "/**").authenticated()
                                         .requestMatchers(HttpMethod.POST, "/api/carts").authenticated()
 
+                                        .requestMatchers(HttpMethod.POST, "/api/vinyl").hasAuthority("ADMIN") // Solo gli amministratori possono creare vinili
+                                        .requestMatchers(HttpMethod.POST, "/api/wine").hasAuthority("ADMIN") // Solo gli amministratori possono creare vini
+
 //                                        .requestMatchers(HttpMethod.POST, "/**").hasAuthority("ADMIN") //TUTTE LE POST POSSONO ESSERE FATTE SOLO DALL'ADMIN
                                         .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
                                         .requestMatchers(HttpMethod.PATCH, "/users/{id}").authenticated() //SOLO UN UTENTE AUTENTICATO PUO MODIFICARE I SUOI DATI
-                                        .requestMatchers(HttpMethod.PUT, "/**").hasAuthority("ADMIN") //TUTTE LE PUT POSSONO ESSERE FATTE SOLO DALL'ADMIN
+                                        .requestMatchers(HttpMethod.PUT, "/**").authenticated()  //TUTTE LE PUT POSSONO ESSERE FATTE SOLO DALL'ADMIN
                                         .requestMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMIN") //TUTTE LE DELETE POSSONO ESSERE FATTE SOLO DALL'ADMIN
                         //.requestMatchers("/**").authenticated() //TUTTO CIO CHE PUO ESSERE SFUGGITO RICHIEDE L'AUTENTICAZIONE (SERVE A GESTIRE EVENTUALI DIMENTICANZE)
                 )
