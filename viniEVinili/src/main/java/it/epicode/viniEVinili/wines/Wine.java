@@ -1,6 +1,7 @@
 package it.epicode.viniEVinili.wines;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import it.epicode.viniEVinili.products.Product;
 import it.epicode.viniEVinili.vinyls.Vinyl;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "wines")
-public class Wine {
+public class Wine extends Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

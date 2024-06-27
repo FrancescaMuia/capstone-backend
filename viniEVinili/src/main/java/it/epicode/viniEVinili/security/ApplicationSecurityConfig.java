@@ -64,6 +64,8 @@ public class ApplicationSecurityConfig {
                                         .requestMatchers(HttpMethod.GET, "/**").authenticated() //TUTTE GLI ENDPOINTS DI TIPO GET SONO RICHIAMABILI SOLO SE L'UTENTE E AUTENTICATO
                                         .requestMatchers("/api/wishlist").authenticated()
                                         .requestMatchers(HttpMethod.POST, "/**").authenticated()
+                                        .requestMatchers(HttpMethod.POST, "/api/carts").authenticated()
+
 //                                        .requestMatchers(HttpMethod.POST, "/**").hasAuthority("ADMIN") //TUTTE LE POST POSSONO ESSERE FATTE SOLO DALL'ADMIN
                                         .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
                                         .requestMatchers(HttpMethod.PATCH, "/users/{id}").authenticated() //SOLO UN UTENTE AUTENTICATO PUO MODIFICARE I SUOI DATI

@@ -1,14 +1,18 @@
 package it.epicode.viniEVinili.carts;
 
+import it.epicode.viniEVinili.cartItems.CartItem;
+import it.epicode.viniEVinili.cartItems.CartItemResponseDTO;
 import it.epicode.viniEVinili.users.User;
 import it.epicode.viniEVinili.users.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class CartService {
 
@@ -40,6 +44,7 @@ public class CartService {
 
         // Set the user in the existing cart
         existingCart.setUser(user);
+        existingCart.setTotalAmount(calculateTotalAmount(existingCart));
 
         Cart updatedCart = cartRepository.save(existingCart);
         return mapCartToResponseDTO(updatedCart);
@@ -50,6 +55,7 @@ public class CartService {
     }
 
     public List<CartResponseDTO> findAll() {
+        log.info("findall avviata");
         List<Cart> carts = cartRepository.findAll();
         return carts.stream()
                 .map(this::mapCartToResponseDTO)
@@ -61,6 +67,21 @@ public class CartService {
         responseDTO.setId(cart.getId());
         responseDTO.setUserId(cart.getUser().getId());
         responseDTO.setTotalAmount(cart.getTotalAmount());
+        List<CartItemResponseDTO> cartItems = cart.getCartItems().stream()
+                .map(this::mapCartItemToResponseDTO)
+                .collect(Collectors.toList());
+        responseDTO.setCartItems(cartItems);
+        return responseDTO;
+    }
+
+    private CartItemResponseDTO mapCartItemToResponseDTO(CartItem cartItem) {
+        CartItemResponseDTO responseDTO = new CartItemResponseDTO();
+        responseDTO.setId(cartItem.getId());
+        responseDTO.setCartId(cartItem.getCart().getId());
+        responseDTO.setProductId(cartItem.getProduct().getId());
+        responseDTO.setQuantity(cartItem.getQuantity());
+        responseDTO.setPrice(cartItem.getPrice());  // Imposta il prezzo
+
         return responseDTO;
     }
 
@@ -73,5 +94,14 @@ public class CartService {
 
         cart.setUser(user);
         return cart;
+    }
+
+    public double calculateTotalAmount(Cart cart) {
+        log.info("calculateTotalAmount avviata");
+        double tempt= cart.getCartItems().stream()
+                .mapToDouble(CartItem::getPrice)
+                .sum();
+        log.info("calc totale: " + tempt);
+        return tempt;
     }
 }

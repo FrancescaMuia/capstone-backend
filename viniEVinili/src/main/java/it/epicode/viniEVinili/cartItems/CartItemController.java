@@ -1,5 +1,6 @@
 package it.epicode.viniEVinili.cartItems;
 
+import it.epicode.viniEVinili.carts.CartResponseDTO;
 import it.epicode.viniEVinili.tracks.TrackRequestDTO;
 import it.epicode.viniEVinili.tracks.TrackResponseDTO;
 import it.epicode.viniEVinili.tracks.TrackService;
@@ -18,6 +19,7 @@ public class CartItemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CartItemResponseDTO> findById(@PathVariable Long id){
+
         return ResponseEntity.ok(service.findById(id));
     }
 
@@ -42,4 +44,10 @@ public class CartItemController {
         service.delete(id);
         return ResponseEntity.ok().build();
     }
+
+//    @PostMapping("/update-cart-total/{cartId}")
+//    public ResponseEntity<CartResponseDTO> updateCartTotal(@PathVariable Long cartId) {
+//        CartResponseDTO responseDTO = service.updateCartTotalAmount(cartId);
+//        return ResponseEntity.ok(responseDTO);
+//    }
 }
