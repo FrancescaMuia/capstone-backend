@@ -1,13 +1,20 @@
 package it.epicode.viniEVinili.vinyls;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import it.epicode.viniEVinili.exceptions.NotFoundException;
 import it.epicode.viniEVinili.tracks.Track;
 import it.epicode.viniEVinili.tracks.TrackRepository;
+import it.epicode.viniEVinili.users.User;
 import it.epicode.viniEVinili.wines.Wine;
 import it.epicode.viniEVinili.wines.WineRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,6 +30,9 @@ public class VinylService {
 
     @Autowired
     private WineRepository wineRepository;
+
+    @Value("${CLOUDINARY_URL}")
+    private String cloudinaryUrl;
 
     public VinylResponseDTO findById(Long vinylId) {
         Vinyl vinyl = vinylRepository.findById(vinylId)
@@ -136,4 +146,12 @@ public class VinylService {
 //        wineRepository.save(wine);
 //    }
 
+
+    public Vinyl saveProductImg(long id, MultipartFile file) throws IOException {
+        var vinyl = vinylRepository.findById(id).orElseThrow(()-> new NotFoundException(id));
+        Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
+        var url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+        vinyl.setCoverImg(url);
+        return vinylRepository.save(vinyl);
+    }
 }

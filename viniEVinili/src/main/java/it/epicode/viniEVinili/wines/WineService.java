@@ -41,6 +41,31 @@ public class WineService {
         return mapWineToResponseDTO(updatedWine);
     }
 
+    public WineResponseDTO patch(Long wineId, WineRequestDTO requestDTO) {
+        Wine existingWine = wineRepository.findById(wineId)
+                .orElseThrow(() -> new EntityNotFoundException("Wine not found with id: " + wineId));
+
+        if (requestDTO.getVariety() != null) {
+            existingWine.setVariety(requestDTO.getVariety());
+        }
+        if (requestDTO.getProducer() != null) {
+            existingWine.setProducer(requestDTO.getProducer());
+        }
+        if (requestDTO.getDescription() != null) {
+            existingWine.setDescription(requestDTO.getDescription());
+        }
+        if (requestDTO.getRecommendedVinylId() != null && !requestDTO.getRecommendedVinylId().isEmpty()) {
+            Set<Vinyl> vinyls = requestDTO.getRecommendedVinylId().stream()
+                    .map(vinylId -> vinylRepository.findById(vinylId)
+                            .orElseThrow(() -> new EntityNotFoundException("Vinyl not found with id: " + vinylId)))
+                    .collect(Collectors.toSet());
+            existingWine.setRecommendedVinyls(vinyls);
+        }
+
+        Wine updatedWine = wineRepository.save(existingWine);
+        return mapWineToResponseDTO(updatedWine);
+    }
+
     public void delete(Long wineId) {
         wineRepository.deleteById(wineId);
     }

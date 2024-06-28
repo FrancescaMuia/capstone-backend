@@ -2,9 +2,15 @@ package it.epicode.viniEVinili.carts;
 
 import it.epicode.viniEVinili.cartItems.CartItem;
 import it.epicode.viniEVinili.cartItems.CartItemResponseDTO;
+import it.epicode.viniEVinili.products.Product;
+import it.epicode.viniEVinili.products.ProductRepository;
 import it.epicode.viniEVinili.security.SecurityUserDetails;
 import it.epicode.viniEVinili.users.User;
 import it.epicode.viniEVinili.users.UserRepository;
+import it.epicode.viniEVinili.users.UserService;
+import it.epicode.viniEVinili.wishlists.Wishlist;
+import it.epicode.viniEVinili.wishlists.WishlistRequestDTO;
+import it.epicode.viniEVinili.wishlists.WishlistResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,29 +31,65 @@ public class CartService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ProductRepository productRepository;
+
     public CartResponseDTO findById(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new EntityNotFoundException("Cart not found with id: " + cartId));
         return mapCartToResponseDTO(cart);
     }
 
+//    public CartResponseDTO save(CartRequestDTO requestDTO) {
+//        Cart cart = mapRequestDTOToCart(requestDTO);
+//        Cart savedCart = cartRepository.save(cart);
+//        return mapCartToResponseDTO(savedCart);
+//    }
+
     public CartResponseDTO save(CartRequestDTO requestDTO) {
-        Cart cart = mapRequestDTOToCart(requestDTO);
+        Long userId = userService.getCurrentUserId(); // Ottieni l'ID utente dal JWT
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Cart cart = new Cart();
+        cart.setUser(user);
+        cart.setTotalAmount(requestDTO.getTotalAmount());
+
         Cart savedCart = cartRepository.save(cart);
         return mapCartToResponseDTO(savedCart);
     }
+
+
+//    public CartResponseDTO update(Long cartId, CartRequestDTO requestDTO) {
+//        Cart existingCart = cartRepository.findById(cartId)
+//                .orElseThrow(() -> new EntityNotFoundException("Cart not found with id: " + cartId));
+//
+//        // Fetch user from repository based on userId in requestDTO
+//        User user = userRepository.findById(requestDTO.getUserId())
+//                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + requestDTO.getUserId()));
+//
+//        // Set the user in the existing cart
+//        existingCart.setUser(user);
+//        existingCart.setTotalAmount(calculateTotalAmount(existingCart));
+//
+//        Cart updatedCart = cartRepository.save(existingCart);
+//        return mapCartToResponseDTO(updatedCart);
+//    }
 
     public CartResponseDTO update(Long cartId, CartRequestDTO requestDTO) {
         Cart existingCart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new EntityNotFoundException("Cart not found with id: " + cartId));
 
-        // Fetch user from repository based on userId in requestDTO
-        User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + requestDTO.getUserId()));
+        // Non serve più fetchare l'utente dal repository, perché l'ID utente è nel contesto di sicurezza
+        Long userId = userService.getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        // Set the user in the existing cart
         existingCart.setUser(user);
-        existingCart.setTotalAmount(calculateTotalAmount(existingCart));
+        existingCart.setTotalAmount(requestDTO.getTotalAmount());
 
         Cart updatedCart = cartRepository.save(existingCart);
         return mapCartToResponseDTO(updatedCart);
@@ -88,16 +130,16 @@ public class CartService {
         return responseDTO;
     }
 
-    private Cart mapRequestDTOToCart(CartRequestDTO requestDTO) {
-        Cart cart = new Cart();
-
-        // Fetch user from repository based on userId in requestDTO
-        User user = userRepository.findById(requestDTO.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + requestDTO.getUserId()));
-
-        cart.setUser(user);
-        return cart;
-    }
+//    private Cart mapRequestDTOToCart(CartRequestDTO requestDTO) {
+//        Cart cart = new Cart();
+//
+//        // Fetch user from repository based on userId in requestDTO
+//        User user = userRepository.findById(requestDTO.getUserId())
+//                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + requestDTO.getUserId()));
+//
+//        cart.setUser(user);
+//        return cart;
+//    }
 
     public double calculateTotalAmount(Cart cart) {
         log.info("calculateTotalAmount avviata");
@@ -108,13 +150,5 @@ public class CartService {
         return tempt;
     }
 
-    // Metodo per ottenere l'ID dell'utente dal contesto di sicurezza
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof SecurityUserDetails) {
-            SecurityUserDetails userDetails = (SecurityUserDetails) authentication.getPrincipal();
-            return userDetails.getUserId();
-        }
-        throw new IllegalStateException("Utente non autenticato");
-    }
+
 }

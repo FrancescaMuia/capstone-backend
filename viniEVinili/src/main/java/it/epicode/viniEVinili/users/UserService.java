@@ -49,13 +49,10 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    /*@Autowired
-    private AddressRepository addressRepository;
 
-     */
 
     @Value("${CLOUDINARY_URL}")
-    private String cloudinaryUrl;
+    private String cloudUrl;
 
     public List<UserResponsePrj> findAllUsers(){
         return userRepository.findAllBy();
@@ -360,10 +357,16 @@ private JwtUtils jwtUtils;
 
 
     public User saveAvatar(long id, MultipartFile file) throws IOException {
+        log.info("start metodo saveavatar");
         var user = userRepository.findById(id).orElseThrow(()-> new NotFoundException(id));
-        Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
+        log.info("\u001B[33massegnato valore a 'user'\u001B[0m");
+        System.out.println("\u001B[33mCloudinary URL: " + cloudUrl + "\u001B[0m");
+        Cloudinary cloudinary = new Cloudinary(cloudUrl);
+        log.info("\u001B[35massegnato valore a 'cloudinary'. mi preèaro a fare upload img\u001B[0m");
         var url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+        log.info("\u001B[34mfatto upload, mi preparo a impostare l'avatar sullo user\u001B[0m");
         user.setAvatar(url);
+        log.info("\u001B[36msettato avatar, mi preparo a lanciare metodo save\u001B[0m");
         return userRepository.save(user);
     }
 

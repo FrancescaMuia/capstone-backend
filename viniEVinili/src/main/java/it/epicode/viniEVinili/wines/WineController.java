@@ -36,7 +36,10 @@ public class WineController {
         return ResponseEntity.ok(service.update(id, request));
     }
 
-
+    @PatchMapping("/{id}")
+    public ResponseEntity<WineResponseDTO> patch(@PathVariable Long id, @RequestBody WineRequestDTO request) {
+        return ResponseEntity.ok(service.patch(id, request));
+    }
 
 
     @DeleteMapping("/{id}")

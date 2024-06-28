@@ -73,7 +73,7 @@ public class ApplicationSecurityConfig {
                                         .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
                                         .requestMatchers(HttpMethod.PATCH, "/users/{id}").authenticated() //SOLO UN UTENTE AUTENTICATO PUO MODIFICARE I SUOI DATI
                                         .requestMatchers(HttpMethod.PUT, "/**").authenticated()  //TUTTE LE PUT POSSONO ESSERE FATTE SOLO DALL'ADMIN
-                                        .requestMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMIN") //TUTTE LE DELETE POSSONO ESSERE FATTE SOLO DALL'ADMIN
+                                        .requestMatchers(HttpMethod.DELETE, "/**").authenticated() //TUTTE LE DELETE POSSONO ESSERE FATTE SOLO DALL'ADMIN
                         //.requestMatchers("/**").authenticated() //TUTTO CIO CHE PUO ESSERE SFUGGITO RICHIEDE L'AUTENTICAZIONE (SERVE A GESTIRE EVENTUALI DIMENTICANZE)
                 )
                 .httpBasic(Customizer.withDefaults())

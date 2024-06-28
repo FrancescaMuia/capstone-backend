@@ -1,10 +1,13 @@
 package it.epicode.viniEVinili.vinyls;
 
+import it.epicode.viniEVinili.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -46,5 +49,14 @@ public class VinylController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/productImg")
+    public Vinyl uploadProductImg(@RequestParam("coverImg") MultipartFile file, @PathVariable Long id) {
+        try {
+            return service.saveProductImg(id, file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
