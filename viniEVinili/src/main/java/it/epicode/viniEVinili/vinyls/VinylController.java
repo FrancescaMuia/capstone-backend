@@ -44,6 +44,17 @@ public class VinylController {
 //        return ResponseEntity.ok().build();
 //    }
 
+    @PutMapping("/associate")
+    public ResponseEntity<Void> associateVinylAndWine(@RequestBody VinylWineAssociationRequest request) {
+        service.associateVinylAndWine(request.getVinylId(), request.getWineId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<VinylResponseDTO> patch(@PathVariable Long id, @RequestBody VinylRequestDTO request) {
+        return ResponseEntity.ok(service.patch(id, request));
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

@@ -43,4 +43,14 @@ public class CartController {
         cartService.delete(id);
         return ResponseEntity.noContent().build();  // Status 204 for successful deletion
     }
+
+    @PostMapping("/purchase/{id}")
+    public ResponseEntity<Void> purchase(@PathVariable Long id) {
+        // Gestire il processo di acquisto...
+
+        // Svuotare il carrello dopo l'acquisto
+        cartService.clearCart(id);
+
+        return ResponseEntity.ok().build();
+    }
 }

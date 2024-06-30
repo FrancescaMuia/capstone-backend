@@ -53,7 +53,7 @@ public class VinylService {
         existingVinyl.setPrice(requestDTO.getPrice());
         existingVinyl.setAvailable(requestDTO.isAvailable());
         existingVinyl.setYear(requestDTO.getYear());
-        //existingVinyl.setArtists(requestDTO.getArtists());
+
         List<Track> tracks = requestDTO.getTrackIds().stream()
                 .map(trackId -> trackRepository.findById(trackId)
                         .orElseThrow(() -> new EntityNotFoundException("Track not found with id: " + trackId)))
@@ -69,13 +69,51 @@ public class VinylService {
                 .collect(Collectors.toList());
         existingVinyl.setRecommendedWines(wines);
 
+        Vinyl updatedVinyl = vinylRepository.save(existingVinyl);
+        return mapVinylToResponseDTO(updatedVinyl);
+    }
 
-        existingVinyl.setCoverImg(requestDTO.getCoverImg());
-        existingVinyl.setGenre(requestDTO.getGenre());
+    public VinylResponseDTO patch(Long vinylId, VinylRequestDTO requestDTO) {
+        Vinyl existingVinyl = vinylRepository.findById(vinylId)
+                .orElseThrow(() -> new EntityNotFoundException("Vinyl not found with id: " + vinylId));
+
+        if (requestDTO.getName() != null) {
+            existingVinyl.setName(requestDTO.getName());
+        }
+        if (requestDTO.getPrice() != 0) {  // assuming price cannot be 0
+            existingVinyl.setPrice(requestDTO.getPrice());
+        }
+        if (requestDTO.isAvailable()) {
+            existingVinyl.setAvailable(requestDTO.isAvailable());
+        }
+        if (requestDTO.getYear() != 0) {  // assuming year cannot be 0
+            existingVinyl.setYear(requestDTO.getYear());
+        }
+        if (requestDTO.getTrackIds() != null && !requestDTO.getTrackIds().isEmpty()) {
+            List<Track> tracks = requestDTO.getTrackIds().stream()
+                    .map(trackId -> trackRepository.findById(trackId)
+                            .orElseThrow(() -> new EntityNotFoundException("Track not found with id: " + trackId)))
+                    .collect(Collectors.toList());
+            existingVinyl.setTracks(tracks);
+        }
+        if (requestDTO.getCoverImg() != null) {
+            existingVinyl.setCoverImg(requestDTO.getCoverImg());
+        }
+        if (requestDTO.getGenre() != null) {
+            existingVinyl.setGenre(requestDTO.getGenre());
+        }
+        if (requestDTO.getRecommendedWineIds() != null && !requestDTO.getRecommendedWineIds().isEmpty()) {
+            List<Wine> wines = requestDTO.getRecommendedWineIds().stream()
+                    .map(wineId -> wineRepository.findById(wineId)
+                            .orElseThrow(() -> new EntityNotFoundException("Wine not found with id: " + wineId)))
+                    .collect(Collectors.toList());
+            existingVinyl.setRecommendedWines(wines);
+        }
 
         Vinyl updatedVinyl = vinylRepository.save(existingVinyl);
         return mapVinylToResponseDTO(updatedVinyl);
     }
+
 
     public void delete(Long vinylId) {
         vinylRepository.deleteById(vinylId);
@@ -95,11 +133,20 @@ public class VinylService {
         responseDTO.setPrice(vinyl.getPrice());
         responseDTO.setAvailable(vinyl.isAvailable());
         responseDTO.setYear(vinyl.getYear());
-        //responseDTO.setArtists(vinyl.getArtists());
         responseDTO.setTracks(vinyl.getTracks());
         responseDTO.setCoverImg(vinyl.getCoverImg());
         responseDTO.setGenre(vinyl.getGenre());
-        responseDTO.setRecommendedWines(vinyl.getRecommendedWines());
+        //responseDTO.setRecommendedWines(vinyl.getRecommendedWines());
+        responseDTO.setRecommendedWines(
+                vinyl.getRecommendedWines().stream()
+                        .map(wine -> {
+                            RecommendedResponseDTO recDTO = new RecommendedResponseDTO();
+                            recDTO.setId(wine.getId());
+                            recDTO.setName(wine.getVariety());
+                            return recDTO;
+                        })
+                        .collect(Collectors.toList())
+        );
         return responseDTO;
     }
 
@@ -109,13 +156,13 @@ public class VinylService {
         vinyl.setPrice(requestDTO.getPrice());
         vinyl.setAvailable(requestDTO.isAvailable());
         vinyl.setYear(requestDTO.getYear());
-        //vinyl.setArtists(requestDTO.getArtists());
 
         List<Track> tracks = requestDTO.getTrackIds().stream()
                 .map(trackId -> trackRepository.findById(trackId)
                         .orElseThrow(() -> new EntityNotFoundException("Track not found with id: " + trackId)))
                 .collect(Collectors.toList());
         vinyl.setTracks(tracks);
+
         vinyl.setCoverImg(requestDTO.getCoverImg());
         vinyl.setGenre(requestDTO.getGenre());
 
@@ -124,7 +171,6 @@ public class VinylService {
                         .orElseThrow(() -> new EntityNotFoundException("Wine not found with id: " + wineId)))
                 .collect(Collectors.toList());
         vinyl.setRecommendedWines(wines);
-
 
         return vinyl;
     }
@@ -145,6 +191,19 @@ public class VinylService {
 //        vinylRepository.save(vinyl);
 //        wineRepository.save(wine);
 //    }
+
+    public void associateVinylAndWine(Long vinylId, Long wineId) {
+        Vinyl vinyl = vinylRepository.findById(vinylId)
+                .orElseThrow(() -> new EntityNotFoundException("Vinyl not found with id: " + vinylId));
+        Wine wine = wineRepository.findById(wineId)
+                .orElseThrow(() -> new EntityNotFoundException("Wine not found with id: " + wineId));
+
+        vinyl.getRecommendedWines().add(wine);
+        wine.getRecommendedVinyls().add(vinyl);
+
+        vinylRepository.save(vinyl);
+        wineRepository.save(wine);
+    }
 
 
     public Vinyl saveProductImg(long id, MultipartFile file) throws IOException {

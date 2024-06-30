@@ -57,7 +57,7 @@ public class User {
 
     @Column(length = 125, nullable = false)
     private String password;
-    private String avatar;
+    private String avatar = "http://res.cloudinary.com/dtfpc1ez0/image/upload/v1719759237/wmqeiwj4jxdfkop33fjp.jpg";
     @ManyToMany(fetch = FetchType.EAGER)
     private final List<Roles> roles = new ArrayList<>();
 

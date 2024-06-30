@@ -1,6 +1,7 @@
 package it.epicode.viniEVinili.carts;
 
 import it.epicode.viniEVinili.cartItems.CartItem;
+import it.epicode.viniEVinili.cartItems.CartItemRepository;
 import it.epicode.viniEVinili.cartItems.CartItemResponseDTO;
 import it.epicode.viniEVinili.products.Product;
 import it.epicode.viniEVinili.products.ProductRepository;
@@ -12,6 +13,7 @@ import it.epicode.viniEVinili.wishlists.Wishlist;
 import it.epicode.viniEVinili.wishlists.WishlistRequestDTO;
 import it.epicode.viniEVinili.wishlists.WishlistResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -36,6 +38,9 @@ public class CartService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
 
     public CartResponseDTO findById(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
@@ -151,4 +156,18 @@ public class CartService {
     }
 
 
+    @Transactional
+    public void clearCart(Long cartId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found with id: " + cartId));
+
+        List<CartItem> cartItems = cart.getCartItems();
+        for (CartItem cartItem : cartItems) {
+            cartItemRepository.delete(cartItem);
+        }
+
+        cart.getCartItems().clear();
+        cart.setTotalAmount(0.0);
+        cartRepository.save(cart);
+    }
 }

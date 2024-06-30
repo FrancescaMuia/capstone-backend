@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -22,20 +23,14 @@ public class Wine extends Product {
     private String variety;
     private String producer;
     private String description;
+    private String coverImg;
 
-   /* @ManyToMany
-    @JoinTable(name = "vinyl_wine",
+    @JsonBackReference
+    @ManyToMany
+    @JoinTable(
+            name = "vinyl_wine",
             joinColumns = @JoinColumn(name = "wine_id"),
-            inverseJoinColumns = @JoinColumn(name = "vinyl_id"))
-
-
-    */
-   @JsonBackReference
-   @ManyToMany(fetch = FetchType.EAGER)
-   @JoinTable(
-           name = "vinyl_wine",
-           joinColumns = @JoinColumn(name = "wine_id"),
-           inverseJoinColumns = @JoinColumn(name = "vinyl_id")
-   )
-    private Set<Vinyl> recommendedVinyls;
+            inverseJoinColumns = @JoinColumn(name = "vinyl_id")
+    )
+    private List<Vinyl> recommendedVinyls;
 }

@@ -16,9 +16,10 @@ public class VinylResponseDTO {
     private double price;
     private boolean available;
     private int year;
-    //private List<Artist> artists;
+
     private List<Track> tracks;
     private String coverImg;
     private String genre;
-    private List<Wine> recommendedWines;
+    //private List<Wine> recommendedWines;
+    private List<RecommendedResponseDTO> recommendedWines;
 }

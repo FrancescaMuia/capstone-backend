@@ -5,6 +5,7 @@ import it.epicode.viniEVinili.tracks.Track;
 import it.epicode.viniEVinili.wines.Wine;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -16,9 +17,9 @@ public class VinylRequestDTO {
     private boolean available;
     private int year;
     //private List<Artist> artists;
-    private List<Long> trackIds;
+    private List<Long> trackIds = new ArrayList<>();
     private String coverImg;
     private String genre;
     //private Set<Wine> recommendedWines;
-    private List<Long> recommendedWineIds;
+    private List<Long> recommendedWineIds = new ArrayList<>();
 }

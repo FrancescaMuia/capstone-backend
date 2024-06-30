@@ -21,14 +21,6 @@ import java.util.Set;
 @Table(name = "vinyls")
 public class Vinyl extends Product {
 
-    /*@ManyToMany
-    @JoinTable(
-            name = "vinyl_artist",
-            joinColumns = @JoinColumn(name = "vinyl_id"),
-            inverseJoinColumns = @JoinColumn(name = "artist_id")
-    )
-    private List<Artist> artists;
-    */
 
 
     @JsonManagedReference
@@ -43,22 +35,8 @@ public class Vinyl extends Product {
     private String coverImg;
     private String genre;
 
-    /*@ManyToMany
-    @JoinTable(name = "vinyl_wine",
-            joinColumns = @JoinColumn(name = "vinyl_id"),
-            inverseJoinColumns = @JoinColumn(name = "wine_id"))
 
-
-   //@ManyToMany(mappedBy = "recommendedVinyls")
-    private Set<Wine> recommendedWines;
-
-     */
     @JsonManagedReference
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "vinyl_wine",
-            joinColumns = @JoinColumn(name = "vinyl_id"),
-            inverseJoinColumns = @JoinColumn(name = "wine_id")
-    )
+    @ManyToMany(mappedBy = "recommendedVinyls", fetch = FetchType.EAGER)
     private List<Wine> recommendedWines;
 }
