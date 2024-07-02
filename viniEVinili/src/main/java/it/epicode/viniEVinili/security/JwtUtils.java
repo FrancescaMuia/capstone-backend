@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 //CLASSE CHE GENERA E CONTROLLA IL TOKEN (JWT)
+@Slf4j
 @Component
 public class JwtUtils {
 
@@ -24,22 +26,7 @@ public class JwtUtils {
     @Value("${jwt.expirationMs}")
     private long expirationMs;
 
-    /*public String generateToken(Authentication auth) {
-        byte[] keyBytes = securityKey.getBytes();
-        Key key = Keys.hmacShaKeyFor(keyBytes);
 
-        var user = (SecurityUserDetails) auth.getPrincipal();
-        return Jwts.builder()
-                .subject(user.getUsername())
-                .issuedAt(new Date())
-                .issuer("MySpringApplication")
-                .expiration(new Date(new Date().getTime() + expirationMs))
-                .signWith(key)
-                //ESISTONO I CLAIM OVVERO SONO INFORMAZIONI AGGIUNTIVE CHE POSOSNO ESSERE AGGIUNTE AL TOKEN .claim("professore dell'aula", "Mauro")
-                .compact();
-    }
-
-     */
     //in questo modo ho una chiave con le informazioni dell'utente
     public String generateToken(Authentication authentication) {
         byte[] keyBytes = securityKey.getBytes();
@@ -53,6 +40,9 @@ public class JwtUtils {
         claims.put("username", userPrincipal.getUsername());
         claims.put("email", userPrincipal.getEmail());
         claims.put("roles", userPrincipal.getRoles());
+
+        Date expirationDate = new Date(System.currentTimeMillis() + expirationMs);
+        log.info("Token expiration date: " + expirationDate);
 
         // Genera il token JWT utilizzando il payload, il secret e la scadenza
         return Jwts.builder()
