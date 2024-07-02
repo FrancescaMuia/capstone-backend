@@ -5,7 +5,6 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -17,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 //CLASSE CHE GENERA E CONTROLLA IL TOKEN (JWT)
-@Slf4j
 @Component
 public class JwtUtils {
 
@@ -40,9 +38,6 @@ public class JwtUtils {
         claims.put("username", userPrincipal.getUsername());
         claims.put("email", userPrincipal.getEmail());
         claims.put("roles", userPrincipal.getRoles());
-
-        Date expirationDate = new Date(System.currentTimeMillis() + expirationMs);
-        log.info("Token expiration date: " + expirationDate);
 
         // Genera il token JWT utilizzando il payload, il secret e la scadenza
         return Jwts.builder()
