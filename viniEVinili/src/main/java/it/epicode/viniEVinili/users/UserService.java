@@ -2,10 +2,6 @@ package it.epicode.viniEVinili.users;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import it.epicode.viniEVinili.addresses.Address;
-import it.epicode.viniEVinili.addresses.AddressRepository;
-import it.epicode.viniEVinili.addresses.AddressRequestDTO;
-import it.epicode.viniEVinili.addresses.AddressResponseDTO;
 import it.epicode.viniEVinili.email.EmailService;
 import it.epicode.viniEVinili.exceptions.NotFoundException;
 import it.epicode.viniEVinili.security.*;

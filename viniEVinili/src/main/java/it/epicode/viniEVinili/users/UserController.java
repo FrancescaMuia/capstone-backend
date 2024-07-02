@@ -1,7 +1,6 @@
 package it.epicode.viniEVinili.users;
 
-import it.epicode.viniEVinili.addresses.AddressRequestDTO;
-import it.epicode.viniEVinili.addresses.AddressResponseDTO;
+
 import it.epicode.viniEVinili.security.ApiValidationException;
 import it.epicode.viniEVinili.security.LoginModel;
 import it.epicode.viniEVinili.security.LoginResponseDTO;

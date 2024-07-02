@@ -1,7 +1,6 @@
 package it.epicode.viniEVinili.users;
 
-import it.epicode.viniEVinili.addresses.Address;
-import it.epicode.viniEVinili.addresses.AddressRequestDTO;
+
 import it.epicode.viniEVinili.security.Roles;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
