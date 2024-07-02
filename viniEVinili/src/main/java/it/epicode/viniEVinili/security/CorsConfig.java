@@ -14,7 +14,8 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
         //UNA VOLTA DEPLOYATO IL FRONTEND BISOGNA AGGIUNGERE L'ORIGIN DOVE E STATO FATTO IL DEPLOY
-        configuration.addAllowedOrigin("localhost:4200");
+        configuration.addAllowedOrigin("http://localhost:4200");
+        configuration.addAllowedOrigin("http://localhost:4200/auth/login");
         configuration.addAllowedMethod("");
         configuration.addAllowedHeader("");
         configuration.setAllowCredentials(true);
