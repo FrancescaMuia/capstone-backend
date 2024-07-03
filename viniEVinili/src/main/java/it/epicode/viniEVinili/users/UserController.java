@@ -1,6 +1,7 @@
 package it.epicode.viniEVinili.users;
 
 
+import it.epicode.viniEVinili.exceptions.UserAlreadyExistsException;
 import it.epicode.viniEVinili.security.ApiValidationException;
 import it.epicode.viniEVinili.security.LoginModel;
 import it.epicode.viniEVinili.security.LoginResponseDTO;
@@ -51,6 +52,7 @@ public class UserController {
         if (validator.hasErrors()) {
             throw new ApiValidationException(validator.getAllErrors());
         }
+        try {
         var registeredUser = user.register(
                 UserRequestDTO.builder()
                         .withName(register.getName())
@@ -67,6 +69,9 @@ public class UserController {
                         .build());
 
         return  new ResponseEntity<> (registeredUser, HttpStatus.OK);
+    } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
     }
 
     @PostMapping("/login")

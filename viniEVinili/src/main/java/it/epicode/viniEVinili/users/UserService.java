@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import it.epicode.viniEVinili.email.EmailService;
 import it.epicode.viniEVinili.exceptions.NotFoundException;
+import it.epicode.viniEVinili.exceptions.UserAlreadyExistsException;
 import it.epicode.viniEVinili.security.*;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -117,7 +118,7 @@ public class UserService {
     @Transactional
     public UserResponseDTO save(UserRequestDTO request){
         if(userRepository.existsByUsername(request.getUsername())){
-            throw new EntityExistsException("Lo user esiste gia' ");
+            throw new UserAlreadyExistsException("Lo user esiste già");
         }
         User entity = new User();
         BeanUtils.copyProperties(request, entity);
