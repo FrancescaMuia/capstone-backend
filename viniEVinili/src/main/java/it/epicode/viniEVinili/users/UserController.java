@@ -5,6 +5,7 @@ import it.epicode.viniEVinili.exceptions.UserAlreadyExistsException;
 import it.epicode.viniEVinili.security.ApiValidationException;
 import it.epicode.viniEVinili.security.LoginModel;
 import it.epicode.viniEVinili.security.LoginResponseDTO;
+import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -69,8 +70,8 @@ public class UserController {
                         .build());
 
         return  new ResponseEntity<> (registeredUser, HttpStatus.OK);
-    } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+    } catch (EntityExistsException e) {
+            throw new UserAlreadyExistsException("Utente già esistente");
         }
     }
 
