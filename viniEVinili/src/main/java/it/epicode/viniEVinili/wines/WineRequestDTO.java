@@ -14,6 +14,8 @@ public class WineRequestDTO {
     private String variety;
     private String producer;
     private String description;
+    private double price;
+    private boolean available;
     private List<Long> recommendedVinylId = new ArrayList<>();
 }
 

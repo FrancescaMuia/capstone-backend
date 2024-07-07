@@ -13,6 +13,8 @@ public class WineResponseDTO {
     private String variety;
     private String producer;
     private String description;
+    private double price;
+    private boolean available;
     //private List<Vinyl> recommendedVinyls;
     private List<RecommendedResponseDTO> recommendedVinyls;
 }

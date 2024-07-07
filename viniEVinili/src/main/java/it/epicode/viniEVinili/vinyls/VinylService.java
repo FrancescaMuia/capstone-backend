@@ -143,6 +143,7 @@ public class VinylService {
                             RecommendedResponseDTO recDTO = new RecommendedResponseDTO();
                             recDTO.setId(wine.getId());
                             recDTO.setName(wine.getVariety());
+                            recDTO.setPrice(wine.getPrice());
                             return recDTO;
                         })
                         .collect(Collectors.toList())

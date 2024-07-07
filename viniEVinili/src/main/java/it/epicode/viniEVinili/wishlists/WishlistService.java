@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -124,6 +125,66 @@ private Wishlist mapRequestDTOToWishlist(WishlistRequestDTO requestDTO, User use
 }
 
 
+    public WishlistResponseDTO addProductToWishlist(Long productId) {
+        // Ottieni l'ID utente corrente
+        Long userId = userService.getCurrentUserId();
+
+        // Trova l'utente basato sull'ID utente
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        // Cerca la wishlist dell'utente, se non esiste, creane una nuova
+        Wishlist wishlist = wishlistRepository.findByUserId(userId)
+                .orElseGet(() -> {
+                    // Se la wishlist non esiste, creane una nuova e associala all'utente
+                    Wishlist newWishlist = new Wishlist();
+                    newWishlist.setUser(user);
+                    newWishlist.setProducts(new ArrayList<>());  // Inizializza la lista dei prodotti
+                    // Salva la nuova wishlist nel repository
+                    return wishlistRepository.save(newWishlist);
+                });
+
+        // Trova il prodotto basato sull'ID prodotto
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
+
+        // Controlla se il prodotto non è già presente nella wishlist
+        if (!wishlist.getProducts().contains(product)) {
+            // Aggiungi il prodotto alla wishlist
+            wishlist.getProducts().add(product);
+            // Salva la wishlist aggiornata nel repository
+            wishlist = wishlistRepository.save(wishlist);
+        }
+
+        // Mappa la wishlist aggiornata in un DTO di risposta
+        return mapWishlistToResponseDTO(wishlist);
+    }
+
+
+
+    public WishlistResponseDTO removeProductFromWishlist(Long productId) {
+        Long userId = userService.getCurrentUserId(); // Ottieni l'ID utente
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Utente non trovato"));
+        Wishlist wishlist = wishlistRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Wishlist not found for user id: " + userId));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
+
+        if (wishlist.getProducts().contains(product)) {
+            wishlist.getProducts().remove(product);
+            wishlist = wishlistRepository.save(wishlist);
+        }
+
+        return mapWishlistToResponseDTO(wishlist);
+    }
+
+
+    public WishlistResponseDTO findByUserId() {
+        Long userId = userService.getCurrentUserId(); // Ottieni l'ID utente
+        Wishlist wishlist = wishlistRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Wishlist not found for user id: " + userId));
+        return mapWishlistToResponseDTO(wishlist);
+    }
 
 
 

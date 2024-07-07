@@ -68,6 +68,8 @@ public class ApplicationSecurityConfig {
 
                                         .requestMatchers(HttpMethod.POST, "/api/vinyl").hasAuthority("ADMIN") // Solo gli amministratori possono creare vinili
                                         .requestMatchers(HttpMethod.POST, "/api/wine").hasAuthority("ADMIN") // Solo gli amministratori possono creare vini
+                                        .requestMatchers(HttpMethod.POST, "/api/wishlist/add-product").permitAll()
+
 
 //                                        .requestMatchers(HttpMethod.POST, "/**").hasAuthority("ADMIN") //TUTTE LE POST POSSONO ESSERE FATTE SOLO DALL'ADMIN
                                         .requestMatchers(HttpMethod.PATCH, "/**").authenticated()

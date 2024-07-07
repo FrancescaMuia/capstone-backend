@@ -63,6 +63,9 @@ public class WineService {
         if (requestDTO.getDescription() != null) {
             existingWine.setDescription(requestDTO.getDescription());
         }
+        if (requestDTO.getPrice() != 0) { // Controlla se il prezzo è stato fornito e è valido
+            existingWine.setPrice(requestDTO.getPrice());
+        }
         if (requestDTO.getRecommendedVinylId() != null && !requestDTO.getRecommendedVinylId().isEmpty()) {
             List<Vinyl> vinyls = requestDTO.getRecommendedVinylId().stream()
                     .map(vinylId -> vinylRepository.findById(vinylId)
@@ -92,6 +95,8 @@ public class WineService {
         responseDTO.setVariety(wine.getVariety());
         responseDTO.setProducer(wine.getProducer());
         responseDTO.setDescription(wine.getDescription());
+        responseDTO.setPrice(wine.getPrice());
+        responseDTO.setAvailable(wine.isAvailable());
         //responseDTO.setRecommendedVinyls(wine.getRecommendedVinyls());
         responseDTO.setRecommendedVinyls(
                 wine.getRecommendedVinyls().stream()
@@ -111,6 +116,8 @@ public class WineService {
         wine.setVariety(requestDTO.getVariety());
         wine.setProducer(requestDTO.getProducer());
         wine.setDescription(requestDTO.getDescription());
+        wine.setPrice(requestDTO.getPrice());
+        wine.setAvailable(requestDTO.isAvailable());
 
         List<Vinyl> vinyls = requestDTO.getRecommendedVinylId().stream()
                 .map(vinylId -> vinylRepository.findById(vinylId)

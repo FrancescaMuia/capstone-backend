@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -43,5 +44,5 @@ public class Wishlist {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonManagedReference
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 }

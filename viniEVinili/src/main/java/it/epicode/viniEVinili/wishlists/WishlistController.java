@@ -42,4 +42,24 @@ public class WishlistController {
         wishlistService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PostMapping("/add-product")
+    public ResponseEntity<WishlistResponseDTO> addProductToWishlist(@RequestBody WishlistProductRequestDTO request) {
+        WishlistResponseDTO updatedWishlist = wishlistService.addProductToWishlist(request.getProductId());
+        return ResponseEntity.ok(updatedWishlist);
+    }
+
+    @PostMapping("/remove-product")
+    public ResponseEntity<WishlistResponseDTO> removeProductFromWishlist(@RequestBody WishlistProductRequestDTO request) {
+        WishlistResponseDTO updatedWishlist = wishlistService.removeProductFromWishlist(request.getProductId());
+        return ResponseEntity.ok(updatedWishlist);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<WishlistResponseDTO> getWishlistByUserId() {
+        WishlistResponseDTO wishlist = wishlistService.findByUserId();
+        return ResponseEntity.ok(wishlist);
+    }
+
 }
