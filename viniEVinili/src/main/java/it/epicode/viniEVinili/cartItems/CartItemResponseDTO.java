@@ -10,4 +10,5 @@ public class CartItemResponseDTO {
     private Long productId;
     private int quantity;
     private double price;
+    private String productName;
 }

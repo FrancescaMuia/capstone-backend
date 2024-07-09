@@ -10,6 +10,7 @@ import java.util.Set;
 public class WineResponseDTO {
 
     private Long id;
+    private String name;
     private String variety;
     private String producer;
     private String description;

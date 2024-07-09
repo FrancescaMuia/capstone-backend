@@ -89,6 +89,10 @@ public class CartItemService {
         responseDTO.setProductId(cartItem.getProduct().getId());
         responseDTO.setQuantity(cartItem.getQuantity());
         responseDTO.setPrice(cartItem.getPrice());  // Ensure price is set in the response
+        Product product = cartItem.getProduct();
+            if (product != null) {
+                responseDTO.setProductName(product.getName());
+            }
         return responseDTO;
     }
 

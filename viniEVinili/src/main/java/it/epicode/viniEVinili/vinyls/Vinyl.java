@@ -36,7 +36,16 @@ public class Vinyl extends Product {
     private String genre;
 
 
+//    @JsonManagedReference
+//    @ManyToMany(mappedBy = "recommendedVinyls", fetch = FetchType.EAGER)
+//    private List<Wine> recommendedWines;
+
     @JsonManagedReference
-    @ManyToMany(mappedBy = "recommendedVinyls", fetch = FetchType.EAGER)
+    @ManyToMany
+    @JoinTable(
+            name = "vinyl_wine",
+            joinColumns = @JoinColumn(name = "vinyl_id"),
+            inverseJoinColumns = @JoinColumn(name = "wine_id")
+    )
     private List<Wine> recommendedWines;
 }

@@ -92,6 +92,7 @@ public class WineService {
     private WineResponseDTO mapWineToResponseDTO(Wine wine) {
         WineResponseDTO responseDTO = new WineResponseDTO();
         responseDTO.setId(wine.getId());
+        responseDTO.setName(wine.getName());
         responseDTO.setVariety(wine.getVariety());
         responseDTO.setProducer(wine.getProducer());
         responseDTO.setDescription(wine.getDescription());
@@ -114,6 +115,7 @@ public class WineService {
     private Wine mapRequestDTOToWine(WineRequestDTO requestDTO) {
         Wine wine = new Wine();
         wine.setVariety(requestDTO.getVariety());
+        wine.setName(requestDTO.getName());
         wine.setProducer(requestDTO.getProducer());
         wine.setDescription(requestDTO.getDescription());
         wine.setPrice(requestDTO.getPrice());

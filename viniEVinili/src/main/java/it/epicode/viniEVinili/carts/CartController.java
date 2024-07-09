@@ -53,4 +53,30 @@ public class CartController {
 
         return ResponseEntity.ok().build();
     }
+
+
+    @PostMapping("/add-item")
+    public ResponseEntity<CartResponseDTO> addCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) { // Modificato per usare il DTO
+        CartResponseDTO cartResponseDTO = cartService.addCartItem(cartItemRequestDTO);
+        return ResponseEntity.ok(cartResponseDTO);
+    }
+
+    @PostMapping("/remove-item")
+    public ResponseEntity<CartResponseDTO> removeCartItem(@RequestBody CartItemRequestDTO cartItemRequestDTO) { // Modificato per usare @RequestBody
+        CartResponseDTO cartResponseDTO = cartService.removeCartItem(cartItemRequestDTO);
+        return ResponseEntity.ok(cartResponseDTO);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<CartResponseDTO> getCartByUserId() { // Metodo aggiunto per trovare il carrello dell'utente
+        CartResponseDTO cartResponseDTO = cartService.findByUserId();
+        return ResponseEntity.ok(cartResponseDTO);
+    }
+
+    @DeleteMapping("/empty-cart/{userId}")
+    public ResponseEntity<Void> emptyCart(@PathVariable Long userId) {
+        cartService.emptyCart(userId);
+        return ResponseEntity.ok().build();
+    }
+
 }

@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -124,6 +125,32 @@ public class CartService {
         return responseDTO;
     }
 
+//    private CartResponseDTO mapCartToResponseDTO(Cart cart) {
+//        CartResponseDTO cartResponseDTO = new CartResponseDTO();
+//        cartResponseDTO.setId(cart.getId());
+//        cartResponseDTO.setUserId(cart.getUser().getId());
+//        cartResponseDTO.setTotalAmount(cart.getTotalAmount());
+//
+//        List<CartItemResponseDTO> cartItemsDTO = new ArrayList<>();
+//        for (CartItem cartItem : cart.getCartItems()) {
+//            CartItemResponseDTO cartItemDTO = new CartItemResponseDTO();
+//            cartItemDTO.setId(cartItem.getId());
+//            cartItemDTO.setQuantity(cartItem.getQuantity());
+//            cartItemDTO.setPrice(cartItem.getPrice());
+//
+//            // Aggiungi il nome del prodotto al DTO del carrello
+//            Product product = cartItem.getProduct();
+//            if (product != null) {
+//                cartItemDTO.setProductName(product.getName());
+//            }
+//
+//            cartItemsDTO.add(cartItemDTO);
+//        }
+//
+//        cartResponseDTO.setCartItems(cartItemsDTO);
+//        return cartResponseDTO;
+//    }
+
     private CartItemResponseDTO mapCartItemToResponseDTO(CartItem cartItem) {
         CartItemResponseDTO responseDTO = new CartItemResponseDTO();
         responseDTO.setId(cartItem.getId());
@@ -131,6 +158,7 @@ public class CartService {
         responseDTO.setProductId(cartItem.getProduct().getId());
         responseDTO.setQuantity(cartItem.getQuantity());
         responseDTO.setPrice(cartItem.getPrice());  // Imposta il prezzo
+        responseDTO.setProductName(cartItem.getProduct().getName());
 
         return responseDTO;
     }
@@ -168,6 +196,85 @@ public class CartService {
 
         cart.getCartItems().clear();
         cart.setTotalAmount(0.0);
+        cartRepository.save(cart);
+    }
+
+    @Transactional
+    public CartResponseDTO addCartItem(CartItemRequestDTO cartItemRequestDTO) {
+        Long userId = userService.getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseGet(() -> {
+                    Cart newCart = new Cart();
+                    newCart.setUser(user);
+                    return cartRepository.save(newCart);
+                });
+
+        Product product = productRepository.findById(cartItemRequestDTO.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + cartItemRequestDTO.getProductId()));
+
+        CartItem cartItem = cart.getCartItems().stream()
+                .filter(item -> item.getProduct().getId().equals(cartItemRequestDTO.getProductId()))
+                .findFirst()
+                .orElseGet(() -> {
+                    CartItem newCartItem = new CartItem();
+                    newCartItem.setCart(cart);
+                    newCartItem.setProduct(product);
+                    newCartItem.setQuantity(0);
+                    newCartItem.setPrice(product.getPrice());
+                    return newCartItem;
+                });
+
+        cartItem.setQuantity(cartItem.getQuantity() + cartItemRequestDTO.getQuantity());
+        cartItem.setPrice(cartItem.getQuantity() * product.getPrice());
+        cartItemRepository.save(cartItem);
+
+        cart.getCartItems().add(cartItem);
+        cart.setTotalAmount(calculateTotalAmount(cart));
+        cartRepository.save(cart);
+
+        return mapCartToResponseDTO(cart);
+    }
+
+    @Transactional
+    public CartResponseDTO removeCartItem(CartItemRequestDTO cartItemRequestDTO) {
+        Long userId = userService.getCurrentUserId();
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found for user id: " + userId));
+
+        CartItem cartItem = cart.getCartItems().stream()
+                .filter(item -> item.getProduct().getId().equals(cartItemRequestDTO.getProductId()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("CartItem not found with product id: " + cartItemRequestDTO.getProductId()));
+
+        cart.getCartItems().remove(cartItem);
+        cartItemRepository.delete(cartItem);
+
+        cart.setTotalAmount(calculateTotalAmount(cart));
+        cartRepository.save(cart);
+
+        return mapCartToResponseDTO(cart);
+    }
+
+    public CartResponseDTO findByUserId() { // Metodo aggiunto per trovare il carrello dell'utente
+        Long userId = userService.getCurrentUserId(); // Ottieni l'ID utente
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found for user id: " + userId));
+        return mapCartToResponseDTO(cart);
+    }
+
+
+    public void emptyCart(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found for user id: " + userId));
+
+        // Rimuovere tutti gli item dal carrello
+        cart.getCartItems().clear();
+        cart.setTotalAmount(0.0); // Opzionale: reimposta l'importo totale a 0
+
+        // Salvare le modifiche al carrello
         cartRepository.save(cart);
     }
 }

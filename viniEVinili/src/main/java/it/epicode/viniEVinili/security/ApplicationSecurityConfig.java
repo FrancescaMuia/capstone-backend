@@ -64,11 +64,13 @@ public class ApplicationSecurityConfig {
                                         .requestMatchers(HttpMethod.GET, "/**").authenticated() //TUTTE GLI ENDPOINTS DI TIPO GET SONO RICHIAMABILI SOLO SE L'UTENTE E AUTENTICATO
                                         .requestMatchers("/api/wishlist").authenticated()
                                         .requestMatchers(HttpMethod.POST, "/**").authenticated()
-                                        .requestMatchers(HttpMethod.POST, "/api/carts").authenticated()
+                                        .requestMatchers(HttpMethod.POST, "/api/carts").permitAll()
 
                                         .requestMatchers(HttpMethod.POST, "/api/vinyl").hasAuthority("ADMIN") // Solo gli amministratori possono creare vinili
                                         .requestMatchers(HttpMethod.POST, "/api/wine").hasAuthority("ADMIN") // Solo gli amministratori possono creare vini
                                         .requestMatchers(HttpMethod.POST, "/api/wishlist/add-product").permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/api/carts/remove-item").permitAll()
+
 
 
 //                                        .requestMatchers(HttpMethod.POST, "/**").hasAuthority("ADMIN") //TUTTE LE POST POSSONO ESSERE FATTE SOLO DALL'ADMIN

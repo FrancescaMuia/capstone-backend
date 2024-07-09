@@ -11,6 +11,7 @@ import java.util.Set;
 @Data
 public class WineRequestDTO {
 
+    private String name;
     private String variety;
     private String producer;
     private String description;
